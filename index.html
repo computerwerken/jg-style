@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HI! I'M J.G. — Multimedia Designer &amp; Art Director</title>
+<meta name="description" content="J.G. — multimedia designer and art director in Chicago. Branding, motion/video, creative technology.">
+
+<link rel="preload" href="fonts/Valnera-VF.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="fonts/Valnera-Monster-VF.woff" as="font" type="font/woff" crossorigin>
+
+<style>
+/* ============ FONTS ============ */
+@font-face{
+  font-family:'Valnera';
+  src:url('fonts/Valnera-VF.woff') format('woff');
+  font-weight:200 900;
+  font-display:block;
+}
+@font-face{
+  font-family:'Valnera Monster';
+  src:url('fonts/Valnera-Monster-VF.woff') format('woff');
+  font-weight:400;
+  font-display:block;
+}
+
+/* ============ TOKENS ============ */
+:root{
+  --blue:#002FA7;
+  --yellow:#F0E100;
+  --white:#FFFFFF;
+  /* Valnera variable-axis base values for headline + CONTACT — tune to taste */
+  --dstn:400;
+  --rotn:400;
+}
+
+/* ============ BASE ============ */
+*{box-sizing:border-box}
+html{background:var(--blue)}
+html,body{margin:0;padding:0}
+body{
+  background:var(--blue);
+  color:var(--white);
+  font-family:'Valnera',Georgia,serif;
+  overscroll-behavior:none;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--yellow);color:var(--blue)}
+
+/* stage is a normal block until physics boots (no-JS / reduced-motion fallback) */
+/* backdrop: faint glow up top, depth at the bottom, halftone dot lattice over all */
+#stage{
+  position:relative;
+  background:
+    radial-gradient(120vw 90vh at 50% -20%, rgba(255,255,255,0.07), transparent 60%),
+    radial-gradient(100vw 85vh at 85% 115%, rgba(0,10,55,0.20), transparent 65%),
+    radial-gradient(rgba(255,255,255,0.045) 1px, transparent 1.4px);
+  background-size:auto,auto,7px 7px;
+}
+#stage.live{position:fixed;inset:0;overflow:hidden}
+#world{position:relative;width:100%;will-change:transform}
+
+/* physicalized units */
+.u{white-space:nowrap}
+#stage.live .u{will-change:transform}
+
+a{color:inherit;text-decoration:none}
+
+/* ============ HERO ============ */
+header{padding-top:3vh;text-align:center}
+h1{
+  font-family:'Valnera Monster','Valnera',Georgia,serif;
+  font-size:clamp(54px,12.5vw,150px);
+  line-height:.92;
+  margin:0;
+  color:var(--white);
+  letter-spacing:.01em;
+  white-space:nowrap; /* single line always — portrait position depends on it */
+}
+h1 .u{display:inline-block}
+h1 .u{font-variation-settings:'DSTN' var(--dstn),'ROTN' var(--rotn)}
+
+/* ============ BIO ============ */
+.bio{
+  width:min(60ch,54%);
+  margin:3.5vh 0 0 8%;
+  font-size:clamp(19px,2.6vw,34px);
+  font-weight:450;
+  line-height:1.22;
+}
+.bio p{margin:0 0 .85em 0}
+em,.y{font-style:normal;color:var(--yellow)}
+.w{display:inline-block}
+
+/* ============ ASCII PORTRAIT ============ */
+/* top clears the (always single-line) headline at any width: 5vh padding + h1 height + gap */
+#portrait{
+  position:absolute;
+  top:calc(3vh + clamp(54px,12.5vw,150px)*0.92 + 3vh);
+  right:4%;
+  margin:0;
+  white-space:pre;
+  color:var(--yellow);
+  font-family:ui-monospace,'SF Mono',Menlo,monospace;
+  font-size:clamp(2.6px,0.27vw,4.6px); /* 200-col art ≈ 32vw wide */
+  line-height:1.05;
+  letter-spacing:0;
+  user-select:none;
+}
+/* crumble chunks (created by JS from #portrait) */
+.pch{
+  position:absolute;
+  left:0;top:0;
+  margin:0;
+  white-space:pre;
+  color:var(--yellow);
+  font-family:ui-monospace,'SF Mono',Menlo,monospace;
+  user-select:none;
+}
+
+/* ============ SECTION LABEL ============ */
+.label{
+  width:min(980px,86%);
+  margin:5vh auto 2.5vh;
+  color:var(--yellow);
+  font-size:clamp(15px,1.5vw,21px);
+  font-weight:700;
+  letter-spacing:.35em;
+}
+.label .u{display:inline-block}
+
+/* ============ INDEX ============ */
+.index{
+  list-style:none;
+  margin:0 auto;
+  padding:0;
+  width:min(980px,86%);
+  font-size:clamp(19px,2.9vw,38px);
+  font-weight:500;
+  line-height:1.15;
+}
+.index li{margin:0 0 .45em 0}
+.row{
+  display:flex;
+  align-items:baseline;
+  gap:.35em;
+  cursor:pointer;
+}
+.row .dots{
+  flex:1;
+  min-width:2em;
+  border-bottom:.09em dotted var(--white);
+  transform:translateY(-.18em);
+}
+.row .year{font-variant-numeric:tabular-nums}
+.row:hover .t{color:var(--yellow)}
+.row:hover em{color:var(--white)}
+
+/* CONTACT as the final index row — solid yellow bar, blue type */
+.index li:last-child{margin-top:1.1em}
+.contact-row{
+  color:var(--blue);
+  background:var(--yellow);
+  padding:.12em .45em;
+}
+.contact-row .dots{border-bottom-color:var(--blue)}
+.contact-row .t{font-variation-settings:'DSTN' var(--dstn),'ROTN' var(--rotn)}
+.contact-row:hover{background:var(--white)}
+.contact-row:hover .t{color:var(--blue)}
+
+/* ============ EASTER EGG ============ */
+#broom{
+  display:block;
+  width:fit-content;
+  margin:7vh auto 14vh;
+  color:var(--yellow);
+  font-family:ui-monospace,'SF Mono',Menlo,monospace;
+  font-size:11px;
+  line-height:1.1;
+  white-space:pre;
+  user-select:none;
+}
+
+/* ============ RESTACK ============ */
+#restack{
+  position:fixed;
+  right:max(16px,env(safe-area-inset-right));
+  bottom:max(16px,env(safe-area-inset-bottom));
+  z-index:10;
+  background:var(--blue);
+  color:var(--yellow);
+  border:2px solid var(--yellow);
+  font-family:ui-monospace,'SF Mono',Menlo,monospace;
+  font-size:13px;
+  letter-spacing:.15em;
+  padding:.6em 1em;
+  cursor:pointer;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .5s;
+}
+#restack.on{opacity:1;pointer-events:auto}
+#restack:hover{background:var(--yellow);color:var(--blue)}
+
+/* ============ DEBUG ============ */
+#debug{position:fixed;inset:0;pointer-events:none;z-index:9}
+
+/* ============ MOBILE ============ */
+@media (max-width:920px){
+  #portrait{
+    position:static;
+    display:block;
+    width:fit-content;
+    top:auto;
+    margin:3vh 4vw 0 auto;  /* right-aligned margin illustration, not a hero block */
+    font-size:0.53vw;       /* art ≈ 64vw wide, ~24vh tall; formula: desired-vw ÷ 120 */
+  }
+  .bio{width:84%;margin-left:8%;font-size:clamp(16px,4.4vw,19px)}
+  .label{margin-top:3.5vh}
+}
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div id="world">
+
+    <header>
+      <h1><span class="u squish">HI!</span> <span class="u squish">I&rsquo;M</span> <span class="u squish">J.G.</span></h1>
+    </header>
+
+    <!-- ASCII portrait: crumbles into chunks on sweep (see fragmentPortrait) -->
+    <pre id="portrait" aria-hidden="true">                                                                  .         ...... .                                                                                                                    
+                                                            ....::----:::----:::::::...                                                                                                                 
+                                                         ..:::-----:::---:::----::::::::.. . ..                                                                                                         
+                                                    ..:::--:-===-----::-::---:::::::::::.....                                                                                                           
+                                                  .::::-=--==+==-----------::::::::.::..........                                                                                                        
+                                                .::::----=+**+=----:::::::::-::::::::.::.........                                                                                                       
+                                                ::::---===***+=-----------:::::::::::::.............  .                                                                                                 
+                                              .:::-==-:-+*##+=-----::::::------:::::::::............. .                                                                                                 
+                                             .:::-::::=+*%#*+==-------::::::::::---:::::::............                                                                                                  
+                                            .::-::-----=***+=---:::-----:::::::::::::::::::::...:.......                                                                                                
+                                           .:::::-::--==*#*=------::::-----::::::::::::::::::::..........                                                                                               
+                                           :-::----:-=++++==---:::---:-:--------:::::::..:::::::...........                                                                                             
+                                          ::.:-----=+*#**++=++++=-:::-::-:---:::--::-:::::..:::::::.........                                                                                            
+                                         .:::-----*#%%%%%########*+=-:---::------::::::::::::.:::::::.........                                                                                          
+                                       ..:::-::-=#%%%%%@@@@@@@@%%%%%*=-:----:-----::::::::::::...:::::...........                                                                                       
+                                      ....::::-*#%%%@%@@@@@@@@@@@@@%%%*--:---:-::::::::::::.::.:.....:.............                                                                                     
+                                     .::.::::-+#%%%%@@@@@@@@@@@@@@@@@@@%*=-----::::::::::::::.::.....................                                                                                   
+                                    ..::.:::-=*#%%%%@@@@@@@@@@@@@@@@@@@@@%*=----:::.:::::::::::::::....................                                                                                 
+                                   ...:::::-=**#%%%%@@@@@@@@@@@@@@@@@@@@@@@%*====-:.::::::..::::::::.....................                                                                               
+                                  ...:.::::-+**#%%%%@@@@@@@@@@@@@@@@@@@@@@@@@%*+==--:::::.::::::::::::....................                                                                              
+                                  .....::::=+*##%%%%@@@@@@@@@@@@@@@@@@@@@@@@@@%%*+==-::::::::::::::::::....................                                                                             
+                                 ...:.::.:-+**##%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@%%#*++=-::::::::::::::::.:...................   . ..                                                                     
+                                .:.:..:..:=+**#%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%%#*++=-:::::::::::::...::..................  .                                                                        
+                                .....::..:=**##%%%@@@@@@@@@@@@@@@@@@@%#**+++++==++*****++=-:---::::::.....::..................                                                                          
+                                .....:..:=+**##%%%%%%@@@@@@@@@@@@%%#+--::-=+**###******+++=------:--::............... ........  .  .                                                                    
+                                ...:::..-+**######%%%%%%%@@@@@%%%%#+=--=*###%%%@%%%%%%%#*++==-===----:........ ................     .                                                                   
+                               ....:::.-+**+==++++**##%%%%@@@@%%%##*+***#####**#########**++=======--::........  ...... ........ ......                                                                 
+                               .:.:::..=--------:::-=+*##%%@@@%%###****#*+*##%@%#*+==******++===+++=-::........   ...    ....... ......                                                                 
+                               .:.:--::-=+*###***++=--=+*#%@@@@%%##***#***=-=:::...:---=****++=+=+++=-::.......   ...  . ....... .......                                                                
+                               .::---.-=+*####***********#@@@@@@%#**##*#=+%@+... .:-:...-=++*++=++++=-::..... .   ...:-==:....... ......                                                                
+                               .--=-:.=+**+=+**####*+***##%@@@@@%%##%%*+**%@%=...-*+=---=+*##**+++++==-:........ .....:---=-............                                                                
+                              ..--=-..=+=-===-::.::.:+**##%@@@@%%%%%%%%%#**+***++===++***#####**+++===-::..... .  ...:::::=+-............                                                               
+                              ..==-:..:==:..:+*:....:*+###%@@@@%%%%%%%%#%%##********####%%%%###*++===---:.... ... ...::--:-+=............                                                               
+                              .:+=-. .:-:...=*##-:-*##%###%@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%##**++==---::....   ....::----==:.........                                                                 
+                              .:+--.  .-=:::--==+++**#####%@@@%%%%%%%%@@%%%%%%%@%%%%%%%%%%%%%##*++++==--::.....  ....:---==+=. ........                                                                 
+                              .:+-:.  :=+=--=++++**#####*#%@@%%%%%%%%%%@@@@@@@@@@@@@@@@@@%%%%%#***++==--::.:....  ..:::--==+=..........                                                                 
+                               :=:.. .:+*++++*****######*#%%@@%%%#%%%%%%@@@@@@@@@@@@@@@@@%%%%###**++==---:::.:... ..:::--===:.........                                                                  
+                               :-:..  :+*******########**#%@@@%%%%####%@@@@@@@@@@@@@@@%%%%%#####*++++=---:::..........:-====.........                                                                   
+                              .:-... .:+*########%###%#*#%%@@@@%%%%%%###@@@@@@@@@@@@@@@%%%%#####**+++==--:::::.. .....:-===:.....:....                                                                  
+                              .::.... .+*###%%#%%%#%%%#**#%%%%%#*##%%%#*%@@@@@@@@@@@@@%%%%%#####***+++=---:..::........:==:.:....:::...                                                                 
+                              .:....  .+*###%%%%%%%%%%*+=+*****+-..+##**%@@@@@@@@@@%@%%%%%#######***+++-:-:..::....:..::-::.::...:::...                                                                 
+                              .:...   .=*###%%%%%%%%%%*=:.-====----+**+*%@@@@@@@@@@%%%%%%%#######***+++=-::::.::.......::.:.::....:::...                                                                
+                              .....   .=*########%#%%%#++=::--==***+=+#%@@@@@@@@@@@%%%%%%%%######****++=-:::::--.........::::::..:::::..                                                                
+                              ....... .-***######%%%%%%#*==++++*#####%%@@@@@@@@@@@@%%%%%%%%########***+=-::::--=:..:...:.:.::::...::::.                                                                 
+                              ........ .+***######%%%%####*****#%%%%%%%%%%%%@@@@@@@%%%%%%%%########***++=::::::=-..:..:::...:::::.:::::.                                                                
+                              ..........=+***####################%%%%%%%%%@%%%@@%%%%%%%%%%%#########***+=:::-::..:.:-::::::::::::::::::.                                                                
+                               .........:=++**######%%##%%#*+**+++++#%%@@%%%%%%%%%%%%%%%%%#%########**++-::::::..:.::-::...::::::::::::..                                                               
+                               ..........-+++**####%%%%%#+=---=--======+#%%%%%%%%%%%%%%%%%%%########**+=-:::-:..::=:.::::::..:::.::::.:..                                                               
+                               ........:.:=+++**##%%%%#*=------::-=------==+*#%%%%%%%%%%%%%%%######**+==-:::=:::.:*:::-::..:.::::::::.:...                                                              
+                               ........-..-+++*#######*=::::...:::----==+=--=*#%%%%%%%%%%%%%%%####***+=--:::-::...*:.::-::...:::::::::....                                                              
+                               ........::.:=+++*#####*-::--=======+++++==++*#%%%%%%%%%%%%%%%%%####**+=----::-::...+::.::-::..::::::::::....                                                             
+                                .......::..-=++**####*+---==+*++=++=====+**#%%%%%%%%%%%%%%%%#####**+=---=---=--:.:=-:.:::-:...::::::::::...                                                             
+                                ........::..-=++**####*=-------------=+**##%%%%%%%%%%%%%%%%####**++=---=+---=---::--:...::-:.:.::---::::...                                                             
+                                 .....:..:...==++**###**+=--------==++**###%%%%%%%%%%%%######***+==----=+---==--::---..:.:--::::::---::::...                                                            
+                                 .....:..::...-+++*********++++*******#####%#%%%%%%%%%%#####**++=------=+=--===-:::--::..::---:.::::--::::...                                                           
+                                 .........-.. .=+++*************###%%%%%%%%%%%@%%%%%%%%####**+=--------=+=--=++-::::-:......::-:.:::---:::...                                                           
+                                ...:......-:.. .-=++***########%%##%%%%%%@@@@@@@%%%%%%###*++=-::-------=+=---=+-:---:::.......:-:..::---:::...                                                          
+                               .:.........:-.. ..:=+***###%%%%%%####%%%%%%@@@@@@@%%%##**+=--::---------=++=--=+-::::::...::....--....:-:-:::..                                                          
+                                ..........:-.......-++*####%%##%%%%%%%%%%%@@@@%%%%##*++=--:------------+++=--=+-:::::::...:::...:::....::::....                                                         
+                                .::.:.....:-.........-+*#######%%%##%%%%%%%%%%%%#**+=---:-------------=+++====+=:::::::::::::::..:::::...:::....                                                        
+                                 .:.....:::-...........-+*##############%%%%###*+==------------------==++++==-+=-:::::::-:::::::..:-:::::.......                                                        
+                                 ..:.::.:::-:...........:=++**********##****++=-------------------===++++++++-=+--::::-::--::--:-:.::-:--::......                                                       
+                                  .:..::.:-=:.........   ...-=++========--:::::::::::-----------==++**++****===+=---:::--:=-::-----..:--:-:::.....                                                      
+                                   .:::::-==:.....  . . .............:....::::::::::::---------==+++*******+=+===--:-:::--:==:.:-::-:..:::-:::.....                                                     
+                                    .::-:-=-:......    . .  .... ............::::::::::------==++***********++====-----::-::==:..:::::...:::::.:....                                                    
+                                    .:----=::...    .  .. ..      ...........::::::::::----===++***###******+==-===-----:--::-=-..::.:::...::::......                                                   
+                                     .-----::...    .  .. ..... .. .........:::::::::::---==++***######**#**+=+=====-----:--::-=-..:::.::....:::....                                                    
+                                      .-:-:::.....  .... . ...  ......::::.::::::::::::--==+****#########***+=++===++====:---.:-=-..:::........::....                                                   
+                                       .:-:::.:::.. ..... .. .  ......::::::::::::::::--==++**#############*+=+*+=-=++====:--:.:--:...::.............                                                   
+                                         .::...:::.......... ...     ..:::::::::::-----==++**#########%%####*+***+===+====--=-..:-:::.:.:.............                                                  
+                                           .....:::::...... ... ....  .:::::::::::----==++**###%%####%%%%%##***##*+==++===----..:-::..................                                                  
+                                              ...::-::....... ....... .::::::::::---====++*####%%%####%%%%%##**##**+======--::...:::::.................                                                 
+                                                  ..:.... .  .. ..::...:::----===++++*******##%%%%####%%%%%#######**+===+==-:....:::...................                                                 
+                                                     ......    ...... .:---==+***####********#%%%%%###%#%%%%#####****+==-:---.....:.....................                                                
+                                                                  .   .:---=***#########******##%%%%%%%%%%%%%###%%#**+=:...:-:..........................                                                
+                                                                     ..:--==+**##########*****##%%%%%%%%%%%%%%#*#%#*=:......:...........................                                                
+                                                                  .  ..:=====+*##%########****##%%%%%%%%%%%%%%%##+-.......................................                                              
+                                                                     ..:=+++=+*############***##%%%%%%%%%%%%@@*-.........................................                                               
+                                                                      ..:+*+==+##%%#%%%#####**##%%%%%%%%#%%%*:............................................                                              
+                                                                        ..-++=+#%%%%%%%#####**#%%%%%%%%%#+=...............  . .  .........................                                              
+                                                                          ..-++*#%%%%%%%%%##**##%%%%%%%*:.............. . . . ... ............... ........                                              
+                                                                             .+*##%%%%%%%%%#####%%%%%+........... .  ..     ...  . . .... .. .. . .   .                                                 
+                                                                              .+#%%%%%%%%%%%####%@#:.         .....              ..    . .. .                                                           
+                                                                               .+%%%#%@@%%%#####%=             ..  .  .  .                                                                              
+                                                                                .#%#=.     .:=#%=                  .     . .    ...                                                                     
+                                                                                 ..           ...                                                                                                       
+                                                                                                .                                                                                                       
+                                                                                                                                                                                                        
+                                                                                                 .                                                                                                      
+                                                                                                  ..                                                                                                    
+                                                                                                 .....                                                                                                  
+                                                                                              ..  ..                                                                                                    
+                                                                                           .... .                                                                                                       
+                                                                                          ....                                                                                                          </pre>
+
+    <section class="bio">
+      <p class="words">I&rsquo;m a multimedia designer and art director based in Chicago.</p>
+      <p class="words">I specialize in <em>branding</em>, <em>motion/video</em>, and <em>creative technology</em>.</p>
+      <p class="words">Past roles and clients include McMaster-Carr, Full Spectrum, the Block Museum, and the Buffett Institute.</p>
+    </section>
+
+    <p class="label"><span class="u">SELECTED WORK &#8595;</span></p>
+
+    <!-- Replace href="#..." with your Readymag case-study URLs -->
+    <ul class="index">
+      <li><a class="u row" href="#case-uxui"><span class="t">UX/UI at <em>McMaster-Carr</em></span><span class="dots"></span><span class="year">2025&#8211;26</span></a></li>
+      <li><a class="u row" href="#case-cd"><span class="t">Creative Direction at <em>McMaster-Carr</em></span><span class="dots"></span><span class="year">2024&#8211;26</span></a></li>
+      <li><a class="u row" href="#case-fs"><span class="t">Branding for <em>Full Spectrum</em></span><span class="dots"></span><span class="year">2025</span></a></li>
+      <li><a class="u row" href="#case-tiger"><span class="t"><em>Camera Technology</em> for TIGER</span><span class="dots"></span><span class="year">2025</span></a></li>
+      <li><a class="u row" href="#case-block"><span class="t">Motion for the <em>Block Museum</em></span><span class="dots"></span><span class="year">2024</span></a></li>
+      <li><a class="u row" href="#case-buffett"><span class="t">Identity for the <em>Buffett Institute</em></span><span class="dots"></span><span class="year">2023&#8211;24</span></a></li>
+      <li><a class="u row contact-row" href="mailto:hello@jg.style"><span class="t">CONTACT</span><span class="dots"></span><span class="year">hello@jg.style</span></a></li>
+    </ul>
+
+    <pre id="broom" class="u" aria-hidden="true">           ||
+           ||
+           ||
+          /||\
+         //||\\
+        //||||\\
+        ''''''''
+press restack to tidy up</pre>
+
+  </div>
+</div>
+
+<button id="restack" type="button" title="Restore the layout">RESTACK &#8635;</button>
+<canvas id="debug" hidden></canvas>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
+<script>
+(function(){
+'use strict';
+
+/* ================= TUNING — the "feel" knobs ================= */
+var SCROLL_K   = 0.5;    // scroll distance multiplier (lower = slower scroll)
+var SMOOTH     = 0.085;  // scroll easing (lower = heavier, more liquid)
+var MAX_DOWN   = 22;     // px/frame max broom advance  ← anti-billiards
+var MAX_UP     = 60;     // px/frame max broom retreat
+var FRICTION_AIR = 0.18; // higher = "leaves" stop faster
+var FRICTION     = 0.7;  // contact friction (pile shear)
+var DENSITY      = 0.004;
+var SHRINK_W   = 0.94;   // body box vs text box
+var SHRINK_H   = 0.80;
+var VMAX       = 26;     // hard cap on any body's speed (px/frame)
+var AVMAX      = 0.22;   // hard cap on spin (rad/frame)
+var SLAB_H     = 4000;   // broom thickness (extends above viewport top)
+var WAKE_AHEAD = 10;     // px lookahead for waking sleeping bodies
+var SQUISH_IMPACT = 450; // DSTN added on top of the CSS --dstn base at impact (capped at 1000)
+var AMBIENT_DSTN  = 110; // ± idle distortion drift on the headline
+var AMBIENT_ROTN  = 150; // ± idle rotation drift
+var AMBIENT_SPEED = 0.1; // Hz — one full wobble every ~10s
+var CHUNK_COLS_MIN = 9;  // asymmetric crumble: chunk widths vary between these (chars)
+var CHUNK_COLS_MAX = 26;
+var CHUNK_ROWS_MIN = 4;  // and chunk heights between these (lines)
+var CHUNK_ROWS_MAX = 11;
+var TAIL       = 0.45;   // extra viewports of scroll after last element
+
+/* ================= SETUP ================= */
+var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (reduced || typeof Matter === 'undefined') return;   // static fallback page
+
+var Engine=Matter.Engine, Bodies=Matter.Bodies, Body=Matter.Body,
+    Composite=Matter.Composite, Events=Matter.Events, Sleeping=Matter.Sleeping;
+
+var stage=document.getElementById('stage'),
+    world=document.getElementById('world'),
+    restack=document.getElementById('restack'),
+    debugCv=document.getElementById('debug');
+
+var DEBUG=/[?&]debug/.test(location.search);
+var pristine=world.cloneNode(true);          // for RESTACK / resize rebuilds
+
+var engine=null, slab=null, units=[], maxOffset=0, W=0, H=0;
+var target=0, smooth=0, offset=0, raf=0, frame=0;
+
+/* split paragraphs into per-word spans (keeps yellow <em> words yellow) */
+function splitWords(p){
+  var frag=document.createDocumentFragment();
+  Array.prototype.slice.call(p.childNodes).forEach(function(node){
+    var yellow = node.nodeType===1;
+    var text = node.textContent;
+    text.split(/\s+/).forEach(function(wd){
+      if(!wd) return;
+      var s=document.createElement('span');
+      s.className='u w'+(yellow?' y':'');
+      s.textContent=wd;
+      frag.appendChild(s);
+      frag.appendChild(document.createTextNode(' '));
+    });
+  });
+  p.innerHTML='';
+  p.appendChild(frag);
+}
+
+/* shatter the ASCII portrait into a grid of independent chunks */
+function fragmentPortrait(){
+  var pre=document.getElementById('portrait');
+  if(!pre || !pre.textContent.trim()) return;
+  var lines=pre.textContent.replace(/\s+$/,'').split('\n');
+  var rows=lines.length, cols=0;
+  lines.forEach(function(l){ cols=Math.max(cols,l.length); });
+
+  var cs=getComputedStyle(pre);
+  var lh=parseFloat(cs.lineHeight);
+  var r0=pre.getBoundingClientRect();
+  var probe=document.createElement('span');
+  probe.textContent='##########';
+  pre.appendChild(probe);
+  var charW=probe.getBoundingClientRect().width/10;
+  pre.removeChild(probe);
+
+  /* keep the empty container's box so page flow doesn't shift */
+  pre.style.width=r0.width+'px';
+  pre.style.height=r0.height+'px';
+  pre.textContent='';
+
+  /* asymmetric brickwork: jittered band heights, jittered segment widths,
+     random stagger per band so vertical seams never align between bands */
+  function rnd(min,max){ return min+Math.floor(Math.random()*(max-min+1)); }
+  var bands=[], br=0;
+  while(br<rows){
+    var bh=rnd(CHUNK_ROWS_MIN,CHUNK_ROWS_MAX);
+    bands.push([br, Math.min(br+bh,rows)]);
+    br+=bh;
+  }
+  bands.forEach(function(band){
+    var c=-Math.floor(Math.random()*CHUNK_COLS_MAX*0.6);  /* brick stagger */
+    while(c<cols){
+      var w=rnd(CHUNK_COLS_MIN,CHUNK_COLS_MAX);
+      var c0=Math.max(0,c), c1=Math.min(c+w,cols);
+      c+=w;
+      if(c1<=c0) continue;
+      var sub=[], minC=Infinity, maxC=-1, minR=-1, maxR=-1;
+      for(var r=band[0]; r<band[1]; r++){
+        var seg=lines[r].slice(c0,c1);
+        sub.push(seg);
+        if(seg.trim()){
+          var lead=seg.length-seg.replace(/^\s+/,'').length;
+          var end=seg.replace(/\s+$/,'').length;
+          if(lead<minC) minC=lead;
+          if(end>maxC) maxC=end;
+          if(minR<0) minR=r-band[0];
+          maxR=r-band[0];
+        }
+      }
+      if(maxC<0) continue;   /* nothing inked in this cell */
+      var el=document.createElement('pre');
+      el.className='u pch';
+      el.setAttribute('aria-hidden','true');
+      el.textContent=sub.slice(minR,maxR+1)
+                        .map(function(s){ return s.slice(minC,maxC); })
+                        .join('\n');
+      el.style.fontSize=cs.fontSize;
+      el.style.lineHeight=cs.lineHeight;
+      el.style.letterSpacing=cs.letterSpacing;
+      el.style.transform='translate('+(r0.left+(c0+minC)*charW)+'px,'
+                                     +(r0.top+(band[0]+minR)*lh)+'px)';
+      world.appendChild(el);
+    }
+  });
+}
+
+function init(){
+  W=window.innerWidth; H=window.innerHeight;
+  window.scrollTo(0,0);
+  target=smooth=offset=0;
+
+  world.querySelectorAll('.words').forEach(splitWords);
+  fragmentPortrait();
+
+  /* pass 1: measure everything in natural flow at scroll 0 */
+  var els=Array.prototype.slice.call(world.querySelectorAll('.u'));
+  var rects=els.map(function(el){ return el.getBoundingClientRect(); });
+  var contentBottom=0;
+  rects.forEach(function(r){ contentBottom=Math.max(contentBottom,r.bottom); });
+
+  /* pass 2: freeze into absolute positions (pixel-identical) */
+  els.forEach(function(el,i){
+    var r=rects[i];
+    el.style.position='absolute';
+    el.style.left='0'; el.style.top='0'; el.style.margin='0';
+    el.style.width=r.width+'px';
+    el.style.transformOrigin='50% 50%';
+    el.style.transform='translate('+r.left+'px,'+r.top+'px)';
+  });
+  world.style.height=contentBottom+'px';
+  stage.classList.add('live');
+
+  /* scroll runway */
+  maxOffset=contentBottom+H*TAIL;
+  document.body.style.height=(maxOffset/SCROLL_K+H)+'px';
+
+  /* physics */
+  engine=Engine.create({enableSleeping:true});
+  engine.gravity.x=0; engine.gravity.y=0;
+  engine.positionIterations=10;
+  engine.velocityIterations=8;
+
+  units=els.map(function(el,i){
+    var r=rects[i];
+    var b=Bodies.rectangle(r.left+r.width/2, r.top+r.height/2,
+      Math.max(8,r.width*SHRINK_W), Math.max(8,r.height*SHRINK_H), {
+        friction:FRICTION, frictionStatic:1, frictionAir:FRICTION_AIR,
+        restitution:0, density:DENSITY, sleepThreshold:30
+      });
+    Sleeping.set(b,true);
+    var sq=el.classList.contains('squish'), d0=0, r0v=0;
+    if(sq){
+      var fv=getComputedStyle(el).fontVariationSettings||'';
+      var dm=fv.match(/"DSTN"\s+(-?[\d.]+)/); if(dm) d0=parseFloat(dm[1]);
+      var rm=fv.match(/"ROTN"\s+(-?[\d.]+)/); if(rm) r0v=parseFloat(rm[1]);
+    }
+    b.plugin={el:el, w:r.width, h:r.height, squish:sq?0:-1, d0:d0, r0v:r0v,
+              phase:Math.random()*6.2832};
+    return b;
+  });
+
+  slab=Bodies.rectangle(W/2, -SLAB_H/2, W*3, SLAB_H, {isStatic:true, label:'broom'});
+  var wallL=Bodies.rectangle(-100, contentBottom, 200, contentBottom*6, {isStatic:true});
+  var wallR=Bodies.rectangle(W+100, contentBottom, 200, contentBottom*6, {isStatic:true});
+  Composite.add(engine.world, units.concat([slab,wallL,wallR]));
+
+  /* impact distortion via the Valnera DSTN axis */
+  Events.on(engine,'collisionStart',function(e){
+    e.pairs.forEach(function(p){
+      [p.bodyA,p.bodyB].forEach(function(b){
+        if(b.plugin && b.plugin.squish>=0){
+          var other=(b===p.bodyA)?p.bodyB:p.bodyA;
+          var v=Math.hypot(b.velocity.x-(other.velocity?other.velocity.x:0),
+                           b.velocity.y-(other.velocity?other.velocity.y:0));
+          b.plugin.squish=Math.min(1, Math.max(b.plugin.squish, v/14));
+        }
+      });
+    });
+  });
+
+  if(DEBUG){
+    debugCv.hidden=false;
+    debugCv.width=W*devicePixelRatio; debugCv.height=H*devicePixelRatio;
+    debugCv.style.width=W+'px'; debugCv.style.height=H+'px';
+  }
+
+  cancelAnimationFrame(raf);
+  raf=requestAnimationFrame(tick);
+}
+
+function onScroll(){
+  target=Math.max(0, Math.min(maxOffset, window.scrollY*SCROLL_K));
+}
+window.addEventListener('scroll', onScroll, {passive:true});
+
+/* ================= MAIN LOOP ================= */
+function tick(){
+  raf=requestAnimationFrame(tick);
+  frame++;
+  var tnow=performance.now()*0.001;
+
+  smooth+=(target-smooth)*SMOOTH;
+  var delta=Math.max(-MAX_UP, Math.min(MAX_DOWN, smooth-offset));
+  if(Math.abs(delta)<0.01) delta=0;
+  offset+=delta;
+
+  /* wake bodies the broom is about to reach */
+  if(delta>0){
+    for(var i=0;i<units.length;i++){
+      var b=units[i];
+      if(b.isSleeping && b.bounds.min.y < offset+delta+WAKE_AHEAD){
+        Sleeping.set(b,false);
+      }
+    }
+  }
+
+  Body.setPosition(slab, {x:W/2, y:offset-SLAB_H/2}, true);
+  Engine.update(engine, 1000/60);
+
+  /* hard caps: nothing ever moves like a billiard ball */
+  for(var j=0;j<units.length;j++){
+    var u=units[j];
+    if(u.isSleeping) continue;
+    var s=Math.hypot(u.velocity.x,u.velocity.y);
+    if(s>VMAX) Body.setVelocity(u,{x:u.velocity.x*VMAX/s, y:u.velocity.y*VMAX/s});
+    if(Math.abs(u.angularVelocity)>AVMAX) Body.setAngularVelocity(u, AVMAX*(u.angularVelocity<0?-1:1));
+  }
+
+  /* render */
+  world.style.transform='translate3d(0,'+(-offset)+'px,0)';
+  for(var k2=0;k2<units.length;k2++){
+    var b2=units[k2], pl=b2.plugin;
+    if(!b2.isSleeping){
+      pl.el.style.transform='translate('+(b2.position.x-pl.w/2)+'px,'
+        +(b2.position.y-pl.h/2)+'px) rotate('+b2.angle+'rad)';
+    }
+    /* ambient axis pulse + impact distortion (throttled to ~20Hz — re-rastering
+       big variable-font glyphs at 60fps is wasted heat for a 10s drift) */
+    if(pl.squish>=0 && frame%3===0){
+      var w=6.2832*AMBIENT_SPEED*tnow;
+      var dv=Math.round(pl.d0+Math.sin(w+pl.phase)*AMBIENT_DSTN+pl.squish*SQUISH_IMPACT);
+      var rv=Math.round(pl.r0v+Math.sin(w*0.77+pl.phase*1.7)*AMBIENT_ROTN);
+      pl.el.style.fontVariationSettings='"DSTN" '+Math.max(0,Math.min(1000,dv))
+                                       +', "ROTN" '+Math.max(0,Math.min(1000,rv));
+      if(pl.squish>0.02){ pl.squish*=0.7; } else { pl.squish=0; }
+    }
+  }
+
+  restack.classList.toggle('on', offset>H*0.25);
+  if(DEBUG) drawDebug();
+}
+
+function drawDebug(){
+  var ctx=debugCv.getContext('2d');
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='#F0E100'; ctx.lineWidth=1;
+  units.forEach(function(b){
+    ctx.save();
+    ctx.translate(b.position.x, b.position.y-offset);
+    ctx.rotate(b.angle);
+    ctx.strokeRect(-b.plugin.w*SHRINK_W/2, -b.plugin.h*SHRINK_H/2,
+                   b.plugin.w*SHRINK_W, b.plugin.h*SHRINK_H);
+    ctx.restore();
+  });
+  ctx.strokeStyle='#fff';
+  ctx.beginPath(); ctx.moveTo(0,1); ctx.lineTo(W,1); ctx.stroke();
+}
+
+/* ================= REBUILD (restack / width resize) ================= */
+function rebuild(){
+  cancelAnimationFrame(raf);
+  if(engine){ Composite.clear(engine.world,false); Engine.clear(engine); }
+  var fresh=pristine.cloneNode(true);
+  world.parentNode.replaceChild(fresh, world);
+  world=fresh;
+  document.body.style.height='';
+  stage.classList.remove('live');
+  init();
+}
+restack.addEventListener('click', rebuild);
+
+var lastW=window.innerWidth, rT=0;
+window.addEventListener('resize', function(){
+  if(Math.abs(window.innerWidth-lastW)<80) return;  // ignore iOS URL-bar churn
+  clearTimeout(rT);
+  rT=setTimeout(function(){ lastW=window.innerWidth; rebuild(); },300);
+});
+
+/* boot once the real metrics exist */
+var booted=false;
+function boot(){ if(booted) return; booted=true; init(); }
+if(document.fonts && document.fonts.ready){
+  document.fonts.ready.then(boot);
+  setTimeout(boot, 3000);            // safety net
+} else {
+  window.addEventListener('load', boot);
+}
+})();
+</script>
+</body>
+</html>
