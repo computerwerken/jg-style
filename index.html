@@ -400,18 +400,39 @@ var CHUNK_ROWS_MAX = 11;
 var TAIL       = 0.45;   // extra viewports of scroll after last element
 
 /* ================= SETUP ================= */
-var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-if (reduced) return;   // static fallback page
-
-/* matter.js loads deferred — these are assigned in boot() */
-var Engine, Bodies, Body, Composite, Events, Sleeping;
-var isMobile = window.matchMedia('(max-width: 920px)').matches;
-
-/* --- remote diagnostics: open the site with ?diag to show a live status box --- */
+/* --- remote diagnostics: open the site with ?diag to show a live status box.
+       This MUST run before any early return so it reports the fallback reason too. --- */
 var DIAG=/[?&]diag/.test(location.search), lastErr='';
 window.addEventListener('error', function(e){
   lastErr=((e.message||e.type||'?')+' '+((e.filename||'').split('/').pop()||'')+':'+(e.lineno||'')).slice(0,90);
 }, true);
+if(DIAG){
+  var diagEl=document.createElement('div'); diagEl.id='diag'; document.body.appendChild(diagEl);
+  setInterval(function(){
+    try{
+      diagEl.textContent=
+        'reduced-motion:'+window.matchMedia('(prefers-reduced-motion: reduce)').matches+
+        ' matter:'+(typeof Matter)+
+        '\nbooted:'+(typeof booted!=='undefined'&&booted)+' fonts:'+(document.fonts?document.fonts.status:'?')+
+        ' W:'+window.innerWidth+'x'+window.innerHeight+
+        '\nscrollY:'+Math.round(window.scrollY)+
+        ' target:'+(typeof target==='number'?Math.round(target):'-')+
+        ' offset:'+(typeof offset==='number'?Math.round(offset):'-')+
+        '\nvScroll:'+(typeof vScroll!=='undefined'?vScroll:'-')+
+        ' moved:'+(typeof tMoved==='number'?Math.round(tMoved):'-')+
+        ' sawScroll:'+(typeof sawScroll!=='undefined'?sawScroll:'-')+
+        '\nbodies:'+((typeof units!=='undefined'&&units)?units.length:'-')+
+        '\nerr:'+(lastErr||'none');
+    }catch(ex){ diagEl.textContent='diag error: '+ex.message; }
+  }, 400);
+}
+
+var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (reduced) return;   // static fallback page (iOS: Settings > Accessibility > Motion > Reduce Motion)
+
+/* matter.js loads deferred — these are assigned in boot() */
+var Engine, Bodies, Body, Composite, Events, Sleeping;
+var isMobile = window.matchMedia('(max-width: 920px)').matches;
 
 var stage=document.getElementById('stage'),
     world=document.getElementById('world'),
@@ -748,18 +769,6 @@ window.addEventListener('resize', function(){
   clearTimeout(rT);
   rT=setTimeout(function(){ lastW=window.innerWidth; rebuild(); },300);
 });
-
-if(DIAG){
-  var diagEl=document.createElement('div'); diagEl.id='diag'; document.body.appendChild(diagEl);
-  setInterval(function(){
-    diagEl.textContent=
-      'matter:'+(typeof Matter)+' booted:'+booted+' fonts:'+(document.fonts?document.fonts.status:'?')+
-      '\nscrollY:'+Math.round(window.scrollY)+' target:'+Math.round(target)+' offset:'+Math.round(offset)+
-      '\nvScroll:'+vScroll+' moved:'+Math.round(tMoved)+' sawScroll:'+sawScroll+
-      '\nbodies:'+units.length+' W:'+window.innerWidth+'x'+window.innerHeight+
-      '\nerr:'+(lastErr||'none');
-  }, 400);
-}
 
 /* pause the loop when the tab is hidden — battery + thermals on mobile */
 document.addEventListener('visibilitychange', function(){
