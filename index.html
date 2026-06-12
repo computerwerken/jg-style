@@ -6,20 +6,22 @@
 <title>HI! I'M J.G. — Multimedia Designer &amp; Art Director</title>
 <meta name="description" content="J.G. — multimedia designer and art director in Chicago. Branding, motion/video, creative technology.">
 
-<link rel="preload" href="fonts/Valnera-VF.woff" as="font" type="font/woff" crossorigin>
-<link rel="preload" href="fonts/Valnera-Monster-VF.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="fonts/Valnera-VF.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">
+<link rel="preload" href="fonts/Valnera-Monster-VF.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">
 
 <style>
 /* ============ FONTS ============ */
 @font-face{
   font-family:'Valnera';
-  src:url('fonts/Valnera-VF.woff') format('woff');
+  src:url('fonts/Valnera-VF.woff2') format('woff2'),
+      url('fonts/Valnera-VF.woff') format('woff');
   font-weight:200 900;
   font-display:block;
 }
 @font-face{
   font-family:'Valnera Monster';
-  src:url('fonts/Valnera-Monster-VF.woff') format('woff');
+  src:url('fonts/Valnera-Monster-VF.woff2') format('woff2'),
+      url('fonts/Valnera-Monster-VF.woff') format('woff');
   font-weight:400;
   font-display:block;
 }
@@ -42,7 +44,8 @@ body{
   background:var(--blue);
   color:var(--white);
   font-family:'Valnera',Georgia,serif;
-  overscroll-behavior:none;
+  overflow-y:scroll;               /* iOS needs body explicitly scrollable to chain panning */
+  overscroll-behavior-y:contain;   /* prevent bounce without suppressing the gesture itself */
   -webkit-font-smoothing:antialiased;
 }
 ::selection{background:var(--yellow);color:var(--blue)}
@@ -57,12 +60,11 @@ body{
     radial-gradient(rgba(255,255,255,0.045) 1px, transparent 1.4px);
   background-size:auto,auto,7px 7px;
 }
-#stage.live{position:fixed;inset:0;overflow:hidden}
+#stage.live{position:fixed;inset:0;overflow:hidden;touch-action:pan-y} /* pan-y: iOS passes vertical panning up to the scrollable body */
 #world{position:relative;width:100%;will-change:transform}
 
-/* physicalized units */
+/* physicalized units — will-change is managed per-body by JS (awake bodies only) */
 .u{white-space:nowrap}
-#stage.live .u{will-change:transform}
 
 a{color:inherit;text-decoration:none}
 
@@ -207,6 +209,7 @@ em,.y{font-style:normal;color:var(--yellow)}
 
 /* ============ MOBILE ============ */
 @media (max-width:920px){
+  h1{font-size:clamp(32px,9vw,150px)} /* 54px floor overflows narrow phones; bodies would init off-screen */
   #portrait{
     position:static;
     display:block;
@@ -218,6 +221,9 @@ em,.y{font-style:normal;color:var(--yellow)}
   .bio{width:84%;margin-left:8%;font-size:clamp(16px,4.4vw,19px)}
   .label{margin-top:3.5vh}
   .index{font-size:clamp(12px,3.6vw,19px)} /* longest row + year must fit narrow screens */
+}
+@media (max-width:360px){
+  h1{font-size:clamp(26px,8vw,150px)}
 }
 </style>
 </head>
@@ -362,7 +368,7 @@ press restack to tidy up</pre>
 <button id="restack" type="button" title="Restore the layout">RESTACK &#8635;</button>
 <canvas id="debug" hidden></canvas>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js" defer></script>
 <script>
 (function(){
 'use strict';
@@ -393,10 +399,11 @@ var TAIL       = 0.45;   // extra viewports of scroll after last element
 
 /* ================= SETUP ================= */
 var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-if (reduced || typeof Matter === 'undefined') return;   // static fallback page
+if (reduced) return;   // static fallback page
 
-var Engine=Matter.Engine, Bodies=Matter.Bodies, Body=Matter.Body,
-    Composite=Matter.Composite, Events=Matter.Events, Sleeping=Matter.Sleeping;
+/* matter.js loads deferred — these are assigned in boot() */
+var Engine, Bodies, Body, Composite, Events, Sleeping;
+var isMobile = window.matchMedia('(max-width: 920px)').matches;
 
 var stage=document.getElementById('stage'),
     world=document.getElementById('world'),
@@ -404,7 +411,7 @@ var stage=document.getElementById('stage'),
     debugCv=document.getElementById('debug');
 
 var DEBUG=/[?&]debug/.test(location.search);
-var pristine=world.cloneNode(true);          // for RESTACK / resize rebuilds
+var pristine=null;   // cloned in boot(), after fonts load, so rebuilds use true metrics
 
 var engine=null, slab=null, units=[], maxOffset=0, W=0, H=0;
 var target=0, smooth=0, offset=0, raf=0, frame=0;
@@ -432,6 +439,7 @@ function splitWords(p){
 function fragmentPortrait(){
   var pre=document.getElementById('portrait');
   if(!pre || !pre.textContent.trim()) return;
+  if(getComputedStyle(pre).display==='none') return;
   var lines=pre.textContent.replace(/\s+$/,'').split('\n');
   var rows=lines.length, cols=0;
   lines.forEach(function(l){ cols=Math.max(cols,l.length); });
@@ -444,6 +452,7 @@ function fragmentPortrait(){
   pre.appendChild(probe);
   var charW=probe.getBoundingClientRect().width/10;
   pre.removeChild(probe);
+  if(!(charW>0.1) || !(lh>0.1)) return;   /* sub-pixel font metrics — bail rather than divide by ~0 */
 
   /* keep the empty container's box so page flow doesn't shift */
   pre.style.width=r0.width+'px';
@@ -497,7 +506,8 @@ function fragmentPortrait(){
 }
 
 function init(){
-  W=window.innerWidth; H=window.innerHeight;
+  W=window.innerWidth;
+  H=(window.visualViewport && window.visualViewport.height) || window.innerHeight;
   window.scrollTo(0,0);
   target=smooth=offset=0;
 
@@ -547,7 +557,7 @@ function init(){
       var rm=fv.match(/"ROTN"\s+(-?[\d.]+)/); if(rm) r0v=parseFloat(rm[1]);
     }
     b.plugin={el:el, w:r.width, h:r.height, squish:sq?0:-1, d0:d0, r0v:r0v,
-              phase:Math.random()*6.2832};
+              phase:Math.random()*6.2832, awake:false};
     return b;
   });
 
@@ -586,13 +596,18 @@ function onScroll(){
 window.addEventListener('scroll', onScroll, {passive:true});
 
 /* ================= MAIN LOOP ================= */
-function tick(){
+var lastTs=0;
+function tick(ts){
   raf=requestAnimationFrame(tick);
   frame++;
+  /* real frame time, capped at 2 frames so a backgrounded tab can't slingshot the physics */
+  var dt = (ts && lastTs) ? Math.min(ts-lastTs, 33) : 1000/60;
+  if(ts) lastTs=ts;
+  var fk = dt/(1000/60);   /* "frames worth" of time — keeps broom speed display-rate independent */
   var tnow=performance.now()*0.001;
 
-  smooth+=(target-smooth)*SMOOTH;
-  var delta=Math.max(-MAX_UP, Math.min(MAX_DOWN, smooth-offset));
+  smooth+=(target-smooth)*(1-Math.pow(1-SMOOTH, fk));
+  var delta=Math.max(-MAX_UP*fk, Math.min(MAX_DOWN*fk, smooth-offset));
   if(Math.abs(delta)<0.01) delta=0;
   offset+=delta;
 
@@ -607,7 +622,7 @@ function tick(){
   }
 
   Body.setPosition(slab, {x:W/2, y:offset-SLAB_H/2}, true);
-  Engine.update(engine, 1000/60);
+  Engine.update(engine, dt);
 
   /* hard caps: nothing ever moves like a billiard ball */
   for(var j=0;j<units.length;j++){
@@ -623,18 +638,27 @@ function tick(){
   for(var k2=0;k2<units.length;k2++){
     var b2=units[k2], pl=b2.plugin;
     if(!b2.isSleeping){
+      /* promote to a compositor layer only while awake — phones can't afford 160 idle layers */
+      if(!pl.awake){ pl.awake=true; pl.el.style.willChange='transform'; }
       pl.el.style.transform='translate('+(b2.position.x-pl.w/2)+'px,'
         +(b2.position.y-pl.h/2)+'px) rotate('+b2.angle+'rad)';
+    } else if(pl.awake){
+      pl.awake=false; pl.el.style.willChange='auto';
     }
     /* ambient axis pulse + impact distortion (throttled to ~20Hz — re-rastering
-       big variable-font glyphs at 60fps is wasted heat for a 10s drift) */
-    if(pl.squish>=0 && frame%3===0){
+       big variable-font glyphs at 60fps is wasted heat for a 10s drift).
+       On mobile the ambient drift is off (variable-font re-raster is CPU work);
+       impact squish still renders. */
+    if(pl.squish>=0 && frame%3===0 && (!isMobile || pl.squish>0)){
       var w=6.2832*AMBIENT_SPEED*tnow;
-      var dv=Math.round(pl.d0+Math.sin(w+pl.phase)*AMBIENT_DSTN+pl.squish*SQUISH_IMPACT);
-      var rv=Math.round(pl.r0v+Math.sin(w*0.77+pl.phase*1.7)*AMBIENT_ROTN);
+      var ambD=isMobile?0:Math.sin(w+pl.phase)*AMBIENT_DSTN;
+      var ambR=isMobile?0:Math.sin(w*0.77+pl.phase*1.7)*AMBIENT_ROTN;
+      var dv=Math.round(pl.d0+ambD+pl.squish*SQUISH_IMPACT);
+      var rv=Math.round(pl.r0v+ambR);
       pl.el.style.fontVariationSettings='"DSTN" '+Math.max(0,Math.min(1000,dv))
                                        +', "ROTN" '+Math.max(0,Math.min(1000,rv));
-      if(pl.squish>0.02){ pl.squish*=0.7; } else { pl.squish=0; }
+      if(pl.squish>0.02){ pl.squish*=0.7; }
+      else if(pl.squish>0){ pl.el.style.fontVariationSettings=''; pl.squish=0; }
     }
   }
 
@@ -679,15 +703,38 @@ window.addEventListener('resize', function(){
   rT=setTimeout(function(){ lastW=window.innerWidth; rebuild(); },300);
 });
 
+/* pause the loop when the tab is hidden — battery + thermals on mobile */
+document.addEventListener('visibilitychange', function(){
+  if(!engine) return;
+  if(document.hidden){ cancelAnimationFrame(raf); }
+  else { lastTs=0; raf=requestAnimationFrame(tick); }
+});
+
 /* boot once the real metrics exist */
 var booted=false;
-function boot(){ if(booted) return; booted=true; init(); }
+function boot(){
+  if(booted) return;
+  if(typeof Matter==='undefined') return;   /* matter.js is deferred; retried on load */
+  booted=true;
+  Engine=Matter.Engine; Bodies=Matter.Bodies; Body=Matter.Body;
+  Composite=Matter.Composite; Events=Matter.Events; Sleeping=Matter.Sleeping;
+  pristine=world.cloneNode(true);           /* clone with real font metrics rendered */
+  init();
+}
+/* slow connections get a longer font grace period before the fallback boot */
+var fontTimeout=3000;
+if(navigator.connection && navigator.connection.effectiveType){
+  var et=navigator.connection.effectiveType;
+  if(et==='2g'||et==='slow-2g'){ fontTimeout=10000; }
+  else if(et==='3g'){ fontTimeout=6000; }
+}
 if(document.fonts && document.fonts.ready){
   document.fonts.ready.then(boot);
-  setTimeout(boot, 3000);            // safety net
+  setTimeout(boot, fontTimeout);     // safety net
 } else {
   window.addEventListener('load', boot);
 }
+window.addEventListener('load', boot); // also covers fonts.ready resolving before deferred matter.js
 })();
 </script>
 </body>
