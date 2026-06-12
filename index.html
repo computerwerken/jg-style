@@ -206,6 +206,8 @@ em,.y{font-style:normal;color:var(--yellow)}
 
 /* ============ DEBUG ============ */
 #debug{position:fixed;inset:0;pointer-events:none;z-index:9}
+#runway{width:1px;visibility:hidden;pointer-events:none}
+#diag{position:fixed;left:8px;bottom:8px;z-index:99;background:rgba(0,0,0,.75);color:#7CFC00;font:10px/1.5 ui-monospace,Menlo,monospace;padding:6px 8px;pointer-events:none;white-space:pre}
 
 /* ============ MOBILE ============ */
 @media (max-width:920px){
@@ -405,6 +407,12 @@ if (reduced) return;   // static fallback page
 var Engine, Bodies, Body, Composite, Events, Sleeping;
 var isMobile = window.matchMedia('(max-width: 920px)').matches;
 
+/* --- remote diagnostics: open the site with ?diag to show a live status box --- */
+var DIAG=/[?&]diag/.test(location.search), lastErr='';
+window.addEventListener('error', function(e){
+  lastErr=((e.message||e.type||'?')+' '+((e.filename||'').split('/').pop()||'')+':'+(e.lineno||'')).slice(0,90);
+}, true);
+
 var stage=document.getElementById('stage'),
     world=document.getElementById('world'),
     restack=document.getElementById('restack'),
@@ -532,9 +540,13 @@ function init(){
   world.style.height=contentBottom+'px';
   stage.classList.add('live');
 
-  /* scroll runway */
+  /* scroll runway — a real in-flow spacer; iOS is unreliable with bare body heights
+     when all visible content lives inside a fixed overlay */
   maxOffset=contentBottom+H*TAIL;
-  document.body.style.height=(maxOffset/SCROLL_K+H)+'px';
+  var runway=document.getElementById('runway');
+  if(!runway){ runway=document.createElement('div'); runway.id='runway'; document.body.appendChild(runway); }
+  runway.style.height=(maxOffset/SCROLL_K+H)+'px';
+  document.body.style.height='';
 
   /* physics */
   engine=Engine.create({enableSleeping:true});
@@ -590,10 +602,38 @@ function init(){
   raf=requestAnimationFrame(tick);
 }
 
+var vScroll=false, sawScroll=false, touching=false, tY=0, tMoved=0, tVel=0, tT=0;
+
 function onScroll(){
+  if(window.scrollY>2) sawScroll=true;
   target=Math.max(0, Math.min(maxOffset, window.scrollY*SCROLL_K));
 }
 window.addEventListener('scroll', onScroll, {passive:true});
+
+/* iOS fallback: WebKit sometimes refuses to scroll a document whose visible content
+   is all inside a fixed overlay. If we see real swiping but scrollY never moves,
+   switch to driving the broom directly from the touch gesture. */
+function enableVirtualScroll(){
+  if(vScroll) return;
+  vScroll=true;
+  stage.addEventListener('touchmove', function(e){ if(e.cancelable) e.preventDefault(); }, {passive:false});
+}
+stage.addEventListener('touchstart', function(e){
+  touching=true; tY=e.touches[0].clientY; tVel=0; tT=performance.now();
+}, {passive:true});
+stage.addEventListener('touchmove', function(e){
+  var y=e.touches[0].clientY, dy=tY-y; tY=y;
+  if(!vScroll){
+    tMoved+=Math.abs(dy);
+    if(tMoved>120 && !sawScroll && window.scrollY<2) enableVirtualScroll();
+    if(!vScroll) return;
+  }
+  var now=performance.now(), ms=Math.max(1, now-tT); tT=now;
+  tVel=dy/ms*16.7;                       /* finger speed in px per 60fps-frame */
+  target=Math.max(0, Math.min(maxOffset, target+dy*SCROLL_K));
+}, {passive:true});
+stage.addEventListener('touchend', function(){ touching=false; }, {passive:true});
+stage.addEventListener('touchcancel', function(){ touching=false; }, {passive:true});
 
 /* ================= MAIN LOOP ================= */
 var lastTs=0;
@@ -605,6 +645,12 @@ function tick(ts){
   if(ts) lastTs=ts;
   var fk = dt/(1000/60);   /* "frames worth" of time — keeps broom speed display-rate independent */
   var tnow=performance.now()*0.001;
+
+  /* touch momentum when virtual scrolling */
+  if(vScroll && !touching && Math.abs(tVel)>0.4){
+    target=Math.max(0, Math.min(maxOffset, target+tVel*SCROLL_K*fk));
+    tVel*=Math.pow(0.94, fk);
+  }
 
   smooth+=(target-smooth)*(1-Math.pow(1-SMOOTH, fk));
   var delta=Math.max(-MAX_UP*fk, Math.min(MAX_DOWN*fk, smooth-offset));
@@ -702,6 +748,18 @@ window.addEventListener('resize', function(){
   clearTimeout(rT);
   rT=setTimeout(function(){ lastW=window.innerWidth; rebuild(); },300);
 });
+
+if(DIAG){
+  var diagEl=document.createElement('div'); diagEl.id='diag'; document.body.appendChild(diagEl);
+  setInterval(function(){
+    diagEl.textContent=
+      'matter:'+(typeof Matter)+' booted:'+booted+' fonts:'+(document.fonts?document.fonts.status:'?')+
+      '\nscrollY:'+Math.round(window.scrollY)+' target:'+Math.round(target)+' offset:'+Math.round(offset)+
+      '\nvScroll:'+vScroll+' moved:'+Math.round(tMoved)+' sawScroll:'+sawScroll+
+      '\nbodies:'+units.length+' W:'+window.innerWidth+'x'+window.innerHeight+
+      '\nerr:'+(lastErr||'none');
+  }, 400);
+}
 
 /* pause the loop when the tab is hidden — battery + thermals on mobile */
 document.addEventListener('visibilitychange', function(){
