@@ -28,11 +28,13 @@
 
 /* ============ TOKENS ============ */
 :root{
-  /* "Ink & brass" palette — subdued/editorial. --blue/--yellow names kept so
-     the rest of the stylesheet and JS need no renaming. */
-  --blue:#13284B;    /* deep ink navy ground */
-  --yellow:#C2A24C;  /* muted brass accent */
-  --white:#EDE8DC;   /* warm bone text */
+  /* "Gallery charcoal" palette — near-black ground, bone text, Bauhaus-primary
+     accents. --blue/--yellow names kept so the rest of the sheet/JS need no renaming. */
+  --blue:#1C1B1A;    /* charcoal ground */
+  --white:#ECE7DD;   /* warm bone text */
+  --yellow:#F0C32C;  /* Bauhaus yellow — the house accent (labels, contact bar, restack) */
+  --red:#D9402A;     /* Bauhaus red */
+  --cobalt:#3A66E0;  /* Bauhaus blue */
   /* Valnera variable-axis base values for headline + CONTACT — tune to taste */
   --dstn:400;
   --rotn:400;
@@ -57,9 +59,9 @@ body{
 #stage{
   position:relative;
   background:
-    radial-gradient(120vw 90vh at 50% -20%, rgba(237,232,220,0.06), transparent 60%),
-    radial-gradient(100vw 85vh at 85% 115%, rgba(6,13,30,0.45), transparent 65%),
-    radial-gradient(rgba(237,232,220,0.05) 1px, transparent 1.4px);
+    radial-gradient(120vw 90vh at 50% -20%, rgba(236,231,221,0.05), transparent 60%),
+    radial-gradient(100vw 85vh at 85% 115%, rgba(0,0,0,0.40), transparent 65%),
+    radial-gradient(rgba(236,231,221,0.05) 1px, transparent 1.4px);
   background-size:auto,auto,7px 7px;
 }
 #stage.live{position:fixed;inset:0;overflow:hidden;touch-action:pan-y} /* pan-y: iOS passes vertical panning up to the scrollable body */
@@ -94,6 +96,10 @@ h1 .u{font-variation-settings:'DSTN' var(--dstn),'ROTN' var(--rotn)}
 }
 .bio p{margin:0 0 .85em 0}
 em,.y{font-style:normal;color:var(--yellow)}
+/* Bauhaus triad — bio keywords cycle red / cobalt / yellow (set per-word in splitWords) */
+.a-red{color:var(--red)}
+.a-blue{color:var(--cobalt)}
+.a-gold{color:var(--yellow)}
 .w{display:inline-block}
 
 /* ============ ASCII PORTRAIT ============ */
@@ -157,8 +163,13 @@ em,.y{font-style:normal;color:var(--yellow)}
   transform:translateY(-.18em);
 }
 .row .year{font-variant-numeric:tabular-nums}
-.row:hover .t{color:var(--yellow)}
-.row:hover em{color:var(--white)}
+/* each project row owns one primary; the client name carries it, hover floods the label */
+.index li:nth-child(3n+1){--rowaccent:var(--red)}
+.index li:nth-child(3n+2){--rowaccent:var(--cobalt)}
+.index li:nth-child(3n+3){--rowaccent:var(--yellow)}
+.row .t em{color:var(--rowaccent,var(--yellow))}
+.row:hover .t{color:var(--rowaccent,var(--yellow))}
+.row:hover .t em{color:var(--white)}
 
 /* CONTACT as the final index row — solid yellow bar, blue type */
 .index li:last-child{margin-top:1.1em}
@@ -422,13 +433,15 @@ var target=0, smooth=0, offset=0, raf=0, frame=0;
 /* split paragraphs into per-word spans (keeps yellow <em> words yellow) */
 function splitWords(p){
   var frag=document.createDocumentFragment();
+  var accents=['a-red','a-blue','a-gold'], ai=0;   /* each <em> group gets the next primary */
   Array.prototype.slice.call(p.childNodes).forEach(function(node){
-    var yellow = node.nodeType===1;
+    var isAccent = node.nodeType===1;
+    var cls = isAccent ? (' y '+accents[(ai++)%3]) : '';
     var text = node.textContent;
     text.split(/\s+/).forEach(function(wd){
       if(!wd) return;
       var s=document.createElement('span');
-      s.className='u w'+(yellow?' y':'');
+      s.className='u w'+cls;
       s.textContent=wd;
       frag.appendChild(s);
       frag.appendChild(document.createTextNode(' '));
@@ -718,7 +731,7 @@ function drawDebug(){
   var ctx=debugCv.getContext('2d');
   ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
   ctx.clearRect(0,0,W,H);
-  ctx.strokeStyle='#C2A24C'; ctx.lineWidth=1;
+  ctx.strokeStyle='#F0C32C'; ctx.lineWidth=1;
   units.forEach(function(b){
     ctx.save();
     ctx.translate(b.position.x, b.position.y-offset);
