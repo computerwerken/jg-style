@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>UX/UI at McMaster-Carr — J. G. Singhal</title>
+<meta name="description" content="McMaster-Carr — UX / UI Design, 2024–26. Case study by J. G. Singhal.">
+<link rel="preload" href="../fonts/Valnera-VF.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/Valnera-Monster-VF.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:'Valnera';src:url('../fonts/Valnera-VF.woff2') format('woff2'),url('../fonts/Valnera-VF.woff') format('woff');font-weight:200 900;font-display:swap}
+@font-face{font-family:'Valnera Monster';src:url('../fonts/Valnera-Monster-VF.woff2') format('woff2'),url('../fonts/Valnera-Monster-VF.woff') format('woff');font-weight:400;font-display:swap}
+:root{--bg:#1C1B1A;--fg:#ECE7DD;--a:#D9402A;--muted:#9A968C}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:'Valnera',Georgia,serif;
+  background-image:radial-gradient(rgba(236,231,221,0.05) 1px,transparent 1.4px);background-size:7px 7px;
+  -webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{width:min(920px,90%);margin:0 auto;padding:0 0 12vh}
+.topbar{display:flex;justify-content:space-between;align-items:baseline;padding:3vh 0 0;font-size:15px}
+.topbar a{color:var(--fg);text-decoration:none;opacity:.8}
+.topbar a:hover{opacity:1;color:var(--a)}
+.tag{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.15em;color:var(--a);
+  border:1px solid var(--a);border-radius:0;padding:3px 8px;text-transform:uppercase}
+h1{font-family:'Valnera Monster','Valnera',serif;font-size:clamp(40px,8vw,104px);line-height:.95;margin:7vh 0 0;
+  font-variation-settings:'DSTN' 400,'ROTN' 400}
+.meta{margin:3vh 0 0;font-size:clamp(13px,1.5vw,17px);letter-spacing:.22em;text-transform:uppercase;color:var(--a);font-weight:700}
+.meta span{color:var(--muted)}
+.lead{font-size:clamp(20px,2.6vw,30px);line-height:1.3;margin:5vh 0 0;max-width:30ch}
+section{margin:8vh 0 0}
+section h2{font-family:'Valnera Monster','Valnera',serif;font-size:clamp(24px,4vw,42px);margin:0 0 .5em;color:var(--a);
+  font-variation-settings:'DSTN' 400,'ROTN' 400}
+section p{font-size:clamp(16px,1.9vw,21px);max-width:60ch;margin:0}
+.ph{margin:4vh 0 0;border:2px solid var(--a);display:flex;align-items:center;justify-content:center;width:100%}
+.ph figcaption{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.25em;color:var(--a);text-transform:uppercase}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:3vh}
+.grid2 .ph{margin-top:4vh}
+@media(max-width:640px){.grid2{grid-template-columns:1fr}}
+footer{margin:12vh 0 0;border-top:1px solid rgba(236,231,221,.18);padding-top:4vh;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:2vh}
+footer a{color:var(--fg);text-decoration:none;font-size:clamp(18px,2.4vw,26px)}
+footer a:hover{color:var(--a)}
+.next{font-family:'Valnera Monster','Valnera',serif}
+.draft{margin:6vh 0 0;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.1em;color:var(--muted)}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="topbar"><a href="../index.html">&larr; J. G. Singhal</a><span class="tag">Draft</span></div>
+  <h1>UX/UI at McMaster-Carr</h1>
+  <div class="meta">McMaster-Carr <span>&middot;</span> UX / UI Design <span>&middot;</span> 2024–26</div>
+  <p class="lead">A multi-year engagement refining core ordering and product-discovery flows for one of industrial supply’s most-used catalogs—preserving its famous speed while modernizing the interaction layer.</p>
+  <section>
+    <h2>The brief</h2>
+    <p>McMaster-Carr’s catalog is loved for clarity and pace. The work centered on keeping that ethos intact while updating patterns across search, filtering, and checkout so they scale across thousands of product categories.</p>
+    <div class="grid2"><figure class="ph" style="aspect-ratio:4/3;background-image:linear-gradient(to top right,transparent calc(50% - 1px),rgba(217,64,42,0.28) 50%,transparent calc(50% + 1px)),linear-gradient(to bottom right,transparent calc(50% - 1px),rgba(217,64,42,0.28) 50%,transparent calc(50% + 1px))"><figcaption>PHOTO &middot; to be added</figcaption></figure><figure class="ph" style="aspect-ratio:4/3;background-image:linear-gradient(to top right,transparent calc(50% - 1px),rgba(217,64,42,0.28) 50%,transparent calc(50% + 1px)),linear-gradient(to bottom right,transparent calc(50% - 1px),rgba(217,64,42,0.28) 50%,transparent calc(50% + 1px))"><figcaption>PHOTO &middot; to be added</figcaption></figure></div>
+  </section>
+  <section>
+    <h2>Approach</h2>
+    <p>Component-level audits and rapid prototyping, iterated closely with engineering, produced a library of interaction patterns—dense where it needs to be, quiet everywhere else.</p>
+    <figure class="ph" style="aspect-ratio:16/9;background-image:linear-gradient(to top right,transparent calc(50% - 1px),rgba(217,64,42,0.28) 50%,transparent calc(50% + 1px)),linear-gradient(to bottom right,transparent calc(50% - 1px),rgba(217,64,42,0.28) 50%,transparent calc(50% + 1px))"><figcaption>PHOTO &middot; to be added</figcaption></figure>
+  </section>
+  <section>
+    <h2>Outcome</h2>
+    <p>Cleaner task flows, faster time-to-part, and a reusable pattern set adopted across teams.</p>
+    <figure class="ph" style="aspect-ratio:16/9;background-image:linear-gradient(to top right,transparent calc(50% - 1px),rgba(217,64,42,0.28) 50%,transparent calc(50% + 1px)),linear-gradient(to bottom right,transparent calc(50% - 1px),rgba(217,64,42,0.28) 50%,transparent calc(50% + 1px))"><figcaption>PHOTO &middot; to be added</figcaption></figure>
+  </section>
+  <p class="draft">Draft copy &amp; placeholder imagery — pending final details from J. G. Singhal.</p>
+  <footer>
+    <a href="../index.html">&larr; All work</a>
+    <a class="next" href="mcmaster-cd.html">Next: Creative Direction &rarr;</a>
+  </footer>
+</main>
+</body>
+</html>
